@@ -1,0 +1,15 @@
+```mermaid
+sequenceDiagram
+participant browser
+participant server
+
+Note right of browser: Form button is clicked
+Note right of browser: Default method of GET request is prevented by the JS
+Note right of browser: Event handler creates a new note and adds it to note list and list is rerendered
+browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+Note right of browser: sends JSON data of content + date
+activate server
+server-->>browser: [{"message":"note created"}]
+deactivate server
+Note left of server: 201 Created
+```
