@@ -16,6 +16,13 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [vote,setVote] = useState(Array(anecdotes.length).fill(0))
+
+  const voteUpdater = () => {
+    const newVotes = [...vote]
+    newVotes[selected] += 1
+    setVote(newVotes)
+  }
   
   function getRandomInt(min, max){
     min = Math.ceil(min)
@@ -26,6 +33,8 @@ const App = () => {
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {vote[selected]} votes</p>
+      <Button text='vote' onClick={voteUpdater}/>
       <Button text='next anecdote' onClick={()=>setSelected(getRandomInt(0,7))}/>
     </div>
   )
