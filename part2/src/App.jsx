@@ -18,7 +18,7 @@ const Part = ({part}) => (
   </p>
 )
 
-const Total = (props) => <h4>total of {props.total} exercises</h4>
+const Total = ({total}) => <h4>total of {total.reduce((sum,part)=>sum+part.exercises,0)} exercises</h4>
 
 const App = () => {
   const course = {
@@ -51,11 +51,7 @@ const App = () => {
   return (
   <>
     <Course course={course} />
-    <Total total={
-          course.parts[0].exercises +
-          course.parts[1].exercises +
-          course.parts[2].exercises +
-          course.parts[3].exercises} />
+    <Total total={course.parts} />
   </>
   ) 
 }
