@@ -45,9 +45,12 @@ const App = () => {
       return
     }
     const nextId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1
-    setPersons(persons.concat({name: newName, number: newNumber,id:nextId}))
+    const nextNote = {name: newName, number: newNumber, id: nextId}
+    axios.post('http://localhost:3001/persons',nextNote).then(response => {
+    setPersons(persons.concat(response.data))
     setNewName('')
     setNewNumber('')
+    })
   }
   const handleNewNumber = (event) => {
     setNewNumber(event.target.value)
