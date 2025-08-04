@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/actions.js'
 
 const Filter = ({value,onChange}) => (
   <form>
@@ -30,7 +30,7 @@ const App = () => {
   const [search,setNewSearch] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => setPersons(response.data))
+    personService.getAll().then(data => setPersons(data))
   },[])
   
   const handleNewName = (event) => {
@@ -46,10 +46,11 @@ const App = () => {
     }
     const nextId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1
     const nextNote = {name: newName, number: newNumber, id: nextId}
-    axios.post('http://localhost:3001/persons',nextNote).then(response => {
-    setPersons(persons.concat(response.data))
-    setNewName('')
-    setNewNumber('')
+    personService.create(nextNote)
+      .then(data => {
+        setPersons(persons.concat(data))
+        setNewName('')
+        setNewNumber('')
     })
   }
   const handleNewNumber = (event) => {
