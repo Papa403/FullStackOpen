@@ -21,7 +21,13 @@ const PersonForm = ({onSubmit,newName,handleNewName,newNumber,handleNewNumber}) 
   </form>
 )
 
-const Persons = ({personsToShow}) => (personsToShow.map(person=><div>{person.name} {person.number}</div>))
+const Persons = ({personsToShow, handleDelete}) => (
+  personsToShow.map(person => (
+    <div>
+    {person.name} {person.number} <button onClick={()=>handleDelete(person.id)}>delete</button>
+    </div>
+  ))
+)
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -45,7 +51,7 @@ const App = () => {
       return
     }
     const nextId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1
-    const nextNote = {name: newName, number: newNumber, id: nextId}
+    const nextNote = {name: newName, number: newNumber, id: nextId.toString()}
     personService.create(nextNote)
       .then(data => {
         setPersons(persons.concat(data))
@@ -62,6 +68,14 @@ const App = () => {
   const personsToShow = search
     ? persons.filter(person => person.name.toLowerCase().includes(search.toLowerCase()))
     : persons
+
+  const handleDelete = (id) => {
+    personService.deletePerson(id)
+      .then(()=>{
+        setPersons(persons.filter(person=>person.id !== id))
+      })
+  }
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -76,7 +90,7 @@ const App = () => {
         newNumber={newNumber} 
         handleNewNumber={handleNewNumber}/>
       <h3>Numbers</h3>
-      <Persons personsToShow={personsToShow}/>
+      <Persons personsToShow={personsToShow} handleDelete={handleDelete}/>
     </div>
   )
 }
