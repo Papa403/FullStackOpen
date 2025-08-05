@@ -46,8 +46,18 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     const isDuplicate = persons.some(person => person.name === newName)
+    console.log(isDuplicate)
     if (isDuplicate) {
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook. Do you want to replace with new number?`)) {
+        const person = persons.find(person => person.name === newName)
+        const newData = {...person, number: newNumber}
+        personService.update(newData.id,newData)
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id === newData.id ? returnedPerson : p))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
       return
     }
     const nextId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1
