@@ -46,7 +46,6 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     const isDuplicate = persons.some(person => person.name === newName)
-    console.log(isDuplicate)
     if (isDuplicate) {
       if(window.confirm(`${newName} is already added to phonebook. Do you want to replace with new number?`)) {
         const person = persons.find(person => person.name === newName)
