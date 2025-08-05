@@ -70,10 +70,12 @@ const App = () => {
     : persons
 
   const handleDelete = (id) => {
+    if (window.confirm(`Delete ID ${id}?`)) {
     personService.deletePerson(id)
       .then(()=>{
         setPersons(persons.filter(person=>person.id !== id))
       })
+    }
   }
   
   return (
