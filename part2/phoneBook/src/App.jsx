@@ -1,4 +1,5 @@
 import { useState,useEffect } from 'react'
+import Notification from './components/Notification.jsx'
 import personService from './services/actions.js'
 
 const Filter = ({value,onChange}) => (
@@ -32,8 +33,10 @@ const Persons = ({personsToShow, handleDelete}) => (
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
-  const [newNumber,setNewNumber] = useState('')
-  const [search,setNewSearch] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [search, setNewSearch] = useState('')
+  const [message, setMessage] = useState('')
+  const [messageStatus, setMessageStatus] = useState('')
 
   useEffect(() => {
     personService.getAll().then(data => setPersons(data))
@@ -53,6 +56,12 @@ const App = () => {
         personService.update(newData.id,newData)
           .then(returnedPerson => {
             setPersons(persons.map(p => p.id === newData.id ? returnedPerson : p))
+            setMessage(`updated ${newData.name}`)
+            setMessageStatus('updated')
+            setTimeout(() => {
+              setMessage('')
+              setMessageStatus('')
+            }, 2000)
             setNewName('')
             setNewNumber('')
           })
@@ -64,6 +73,12 @@ const App = () => {
     personService.create(nextNote)
       .then(data => {
         setPersons(persons.concat(data))
+        setMessage(`Added ${data.name}`)
+        setMessageStatus('added')
+        setTimeout(() => {
+          setMessage('')
+          setMessageStatus('')
+        }, 2000)
         setNewName('')
         setNewNumber('')
     })
@@ -79,10 +94,17 @@ const App = () => {
     : persons
 
   const handleDelete = (id) => {
-    if (window.confirm(`Delete ID ${id}?`)) {
+    const person = persons.find(p => p.id === id)
+    if (window.confirm(`Delete ${person ? person.name : 'this person'}?`)) {
     personService.deletePerson(id)
       .then(()=>{
         setPersons(persons.filter(person=>person.id !== id))
+        setMessage(`Deleted ${person ? person.name : id}`)
+        setMessageStatus('deleted')
+        setTimeout(() => {
+          setMessage('')
+          setMessageStatus('')
+        }, 2000)
       })
     }
   }
@@ -90,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} status={messageStatus}/>
       <Filter value={search} onChange={handleNewSearch}/>
       <h3>
         add a new
