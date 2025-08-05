@@ -24,7 +24,7 @@ const PersonForm = ({onSubmit,newName,handleNewName,newNumber,handleNewNumber}) 
 
 const Persons = ({personsToShow, handleDelete}) => (
   personsToShow.map(person => (
-    <div>
+    <div key={person.id}>
     {person.name} {person.number} <button onClick={()=>handleDelete(person.id)}>delete</button>
     </div>
   ))
@@ -104,7 +104,16 @@ const App = () => {
         setTimeout(() => {
           setMessage('')
           setMessageStatus('')
-        }, 2000)
+        }, 4000)
+      })
+      .catch(() => {
+        setMessage('Info has already been deleted from the backend')
+        setMessageStatus('error')
+        setTimeout(() => {
+          setMessage('')
+          setMessageStatus('')
+        }, 4000)
+        setPersons(persons.filter(person=>person.id !== id))
       })
     }
   }
