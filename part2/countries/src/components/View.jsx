@@ -1,3 +1,4 @@
+import Weather from './Weather.jsx'
 const View = ({country}) => {
   return (
     <div>
@@ -9,6 +10,7 @@ const View = ({country}) => {
         {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
       </ul>
       <img src={country.flags.png}/>
+    <Weather country={country} />
     </div>
   )
 }
