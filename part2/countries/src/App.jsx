@@ -36,6 +36,7 @@ function App() {
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
+    setSelectedCountry(null)
   }
 
   const handleShow = (country) => {
