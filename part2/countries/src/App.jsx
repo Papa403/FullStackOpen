@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react'
+import View from './components/View.jsx'
 import apiService from './services/actions.js'
 
-const Countries = ({data}) => {
+const Countries = ({data, onShow}) => {
   if (data.length > 10) {
     return <div>Too many matches, specify another filter</div>
   } else if (data.length === 1) {
-      const country = data[0]
-      return (
-        <div>
-          <h1>{country.name.common}</h1>
-          <p>Capital {country.capital}</p>
-          <p>Area {country.area}</p>
-          <h2>Languages</h2>
-          <ul>
-            {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
-          </ul>
-          <img src={country.flags.png}/>
-        </div>
-      )
-  } else return <div>{data.map(country => <div key={country.name.common}>{country.name.common}</div>)}</div>
+    const country = data[0]
+    return <View country={country} />
+  } else {
+    return (
+      <div>
+        {data.map(country => 
+          <div key={country.name.common}>
+            {country.name.common} <button onClick={()=> onShow(country)}>show</button>
+      </div>
+      )}
+      </div>
+    )
+  }
 }
 
 function App() {
   const [search, setSearch] = useState('')
   const [allCountries, setAllCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
     apiService
@@ -31,10 +32,14 @@ function App() {
       .then((response) => setAllCountries(response))
   },[])  
   
-  const filtedCountries = allCountries.filter(country => country.name.common.toLowerCase().includes(search.toLowerCase()))
+  const filteredCountries = allCountries.filter(country => country.name.common.toLowerCase().includes(search.toLowerCase()))
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
+  }
+
+  const handleShow = (country) => {
+    setSelectedCountry(country)
   }
   
   return (
@@ -43,7 +48,10 @@ function App() {
       find countries{' '} 
       <input value={search} onChange={handleSearch}/>
     </form>
-    <Countries data={filtedCountries}/>
+    {selectedCountry 
+      ? <View country={selectedCountry}/>
+      : <Countries data={filteredCountries} onShow={handleShow}/>
+    }
     </>
   )
 }
