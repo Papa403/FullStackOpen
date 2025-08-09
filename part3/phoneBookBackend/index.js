@@ -61,6 +61,17 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request,response) => {
   const newPerson = request.body
+  if(!newPerson.name || !newPerson.number) {
+    return response.status(400).json({
+      error: 'content missing',
+    })
+  }
+  if(persons.some(person => person.name === newPerson.name)) {
+    return response.status(400).json({
+      error: 'name already exists',
+    })
+  }
+
   const person = {
     id: generateRandomId(),
     ...newPerson,
