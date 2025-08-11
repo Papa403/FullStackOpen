@@ -68,8 +68,7 @@ const App = () => {
       }
       return
     }
-    const nextId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) + 1 : 1
-    const nextNote = {name: newName, number: newNumber, id: nextId.toString()}
+    const nextNote = {name: newName, number: newNumber}
     personService.create(nextNote)
       .then(data => {
         setPersons(persons.concat(data))
