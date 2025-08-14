@@ -4,8 +4,6 @@ const morgan = require('morgan')
 const Entry = require('./models/person')
 const app = express()
 
-let persons = []
-
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
@@ -29,19 +27,25 @@ app.get('/', (request,response) => {
 })
 
 app.get('/api/persons', (request,response) => {
-  Entry.find({}).then(person => {
-    response.json(person)
+  Entry.find({})
+    .then(person => {
+      response.json(person)
   })
 })
 
 app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${persons.length} people</p>
+  Entry.countDocuments({})
+    .then(count => {
+      response.send(`<p>Phonebook has info for ${count} people</p>
     <p>${new Date()}</p>`)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id',(request, response)=> {
-  Entry.findById(request.params.id).then(person => {
-    response.json(person)
+  Entry.findById(request.params.id)
+    .then(person => {
+      response.json(person)
   })
 })
 
