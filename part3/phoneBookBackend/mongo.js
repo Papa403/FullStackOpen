@@ -7,14 +7,13 @@ if (process.argv.length < 2) {
 
 const password = process.argv[2]
 
-const url = `mongodb+srv://alilykai:${password}@cluster0.hkb9zch.mongodb.net/phoneBookApp?retryWrites=true&w=majority&appName=Cluster0`
+const url = `mongodb+srv://fullStackPhoneApp:${password}@cluster0.hkb9zch.mongodb.net/phoneBookApp?retryWrites=true&w=majority&appName=Cluster0`
 
 mongoose.set('strictQuery',false)
 
 mongoose.connect(url)
 
 const phoneBookSchema = new mongoose.Schema({
-  id: String,
   name: String,
   number: String,
 })
@@ -22,7 +21,6 @@ const phoneBookSchema = new mongoose.Schema({
 const Entry = mongoose.model('Entry', phoneBookSchema)
 
 const entry = new Entry({
-  id:3,
   name:process.argv[3],
   number:process.argv[4],
 })
