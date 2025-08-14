@@ -50,6 +50,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .then(result => {
       response.status(204).end()
     })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request,response) => {
@@ -74,6 +75,13 @@ const unknownEndpoint = (request, response) => {
 } 
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
