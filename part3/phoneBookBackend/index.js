@@ -24,10 +24,6 @@ app.use(express.json())
 app.use(express.static('dist'))
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"))
 
-const generateId = () => {
-  return Math.floor(Math.random() * 1000000).toString()
-}
-
 app.get('/', (request,response) => {
   response.send('<h1>Hello person<h1>')
 })
@@ -49,11 +45,11 @@ app.get('/api/persons/:id',(request, response)=> {
   })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Entry.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
 })
 
 app.post('/api/persons', (request,response) => {
@@ -72,6 +68,12 @@ app.post('/api/persons', (request,response) => {
     response.json(savedPerson)
   })
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({error: 'unknown endpoint'})
+} 
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
