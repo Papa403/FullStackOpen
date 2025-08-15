@@ -1,5 +1,5 @@
 .deleted {
-    color: red;
+    color: black;
     background: lightgrey;
     font-size: 20px;
     border-style: solid;
@@ -29,7 +29,7 @@
 }
 
 .error {
-    color: purple;
+    color: red;
     background: lightgrey;
     font-size: 20px;
     border-style: solid;

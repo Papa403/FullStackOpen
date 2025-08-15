@@ -69,7 +69,8 @@ const App = () => {
       return
     }
     const nextNote = {name: newName, number: newNumber}
-    personService.create(nextNote)
+    personService
+      .create(nextNote)
       .then(data => {
         setPersons(persons.concat(data))
         setMessage(`Added ${data.name}`)
@@ -80,7 +81,15 @@ const App = () => {
         }, 2000)
         setNewName('')
         setNewNumber('')
-    })
+      })
+      .catch((error) => {
+        setMessage(error.response.data.error)
+        setMessageStatus('error')
+        setTimeout(() => {
+          setMessage('')
+          setMessageStatus('')
+        }, 4000)
+      })
   }
   const handleNewNumber = (event) => {
     setNewNumber(event.target.value)

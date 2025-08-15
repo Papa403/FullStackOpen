@@ -33,7 +33,7 @@ app.get('/api/persons', (request,response) => {
   })
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Entry.countDocuments({})
     .then(count => {
       response.send(`<p>Phonebook has info for ${count} people</p>
@@ -57,7 +57,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request,response) => {
+app.post('/api/persons', (request,response, next) => {
   const body = request.body
 
   if(!body.name || !body.number) {
@@ -69,9 +69,11 @@ app.post('/api/persons', (request,response) => {
     number: body.number,
   })
   
-  entry.save().then(savedPerson => {
+  entry.save()
+    .then(savedPerson => {
     response.json(savedPerson)
   })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response) => {
@@ -101,6 +103,10 @@ app.use(unknownEndpoint)
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
+  
+  if(error.name === 'ValidationError') {
+    return response.status(400).send({error: `${error.message}`})
+  }
   next(error)
 }
 
