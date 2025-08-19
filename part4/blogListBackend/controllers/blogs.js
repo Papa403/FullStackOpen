@@ -23,4 +23,24 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end()
 })
 
+blogsRouter.put('/:id', async (request, response) => {
+  try {
+    const likes = request.body.likes
+
+    if (typeof likes !== 'number' || likes < 0) {
+      return response.status(400).json({ error: 'Likes must be a non-negative number' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+      return response.status(404).end()
+    }
+    blog.likes = likes
+    const updatedBlog = await blog.save()
+    return response.json(updatedBlog)
+  } catch (error) {
+    return response.status(400).json({ error: 'Failed to update blog' })
+  }
+})
+
 module.exports = blogsRouter

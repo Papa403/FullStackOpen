@@ -69,7 +69,6 @@ test('missing author or url', async () => {
   const newNote = {
     author: 'me',
     likes: '23',
-
   }
   await api
     .post('/api/blogs')
@@ -89,6 +88,24 @@ test('deleting a resource', async () => {
   assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
   assert(!blogsAtEnd.some(blog => blog.id === blogToDelete.id))
 })
+
+test('updating likes of a resource', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+  const updatedLikes = 42
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send({ likes: updatedLikes})
+    .expect(200)
+
+  assert.strictEqual(response.body.likes, updatedLikes)  
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+  assert.strictEqual(updatedBlog.likes, updatedLikes)
+})
+
 
 after(async () => {
   await mongoose.connection.close()
