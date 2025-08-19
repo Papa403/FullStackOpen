@@ -65,6 +65,18 @@ test('blog with no likes has 0 added automatically', async () => {
   assert.strictEqual(response.body.likes, 0)
 })
 
+test('missing author or url', async () => {
+  const newNote = {
+    author: 'me',
+    likes: '23',
+
+  }
+  await api
+    .post('/api/blogs')
+    .send(newNote)
+    .expect(400)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })

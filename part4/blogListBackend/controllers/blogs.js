@@ -6,12 +6,16 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', (request, response) => {
-  const blog = new Blog(request.body)
+blogsRouter.post('/', async (request, response) => {
+  const { title, url } = request.body
 
-  blog.save().then((result) => {
-    response.status(201).json(result)
-  })
+  if (!title || !url) {
+    return response.status(400).end()
+  }
+
+  const blog = new Blog(request.body)
+  const result = await blog.save()
+  response.status(201).json(result)
 })
 
 module.exports = blogsRouter
