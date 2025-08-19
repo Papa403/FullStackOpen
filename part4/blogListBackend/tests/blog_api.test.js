@@ -50,6 +50,21 @@ test('successfully created a new blog', async () => {
   ))
 })
 
+test('blog with no likes has 0 added automatically', async () => {
+  const newNote = {
+    title:'test note added with no likes',
+    author:'me in the code',
+    url:'http://localhost.com',
+  }
+  const response = await api
+    .post('/api/blogs')
+    .send(newNote)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  
+  assert.strictEqual(response.body.likes, 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
