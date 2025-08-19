@@ -77,6 +77,19 @@ test('missing author or url', async () => {
     .expect(400)
 })
 
+test('deleting a resource', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+  
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+  assert(!blogsAtEnd.some(blog => blog.id === blogToDelete.id))
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
