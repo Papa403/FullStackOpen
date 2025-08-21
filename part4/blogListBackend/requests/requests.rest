@@ -2,13 +2,23 @@ POST http://localhost:3003/api/blogs/
 Content-Type: application/json
 
 {
-  "title": "test 2",
-  "author": "moi",
-  "url": "http://no",
-  "likes": "100000000"
+  "title": "test 4",
+  "author": "first one it finds ie the root",
+  "url": "http://yikes",
+  "likes": "4"
 }
 ###
 GET http://localhost:3003/api/blogs
 
 ###
 DELETE http://localhost:3003/api/blogs/68a406ceb6e49f47dc8626d4
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "exercise 4_17",
+  "name": "please work",
+  "password": "password"
+}
