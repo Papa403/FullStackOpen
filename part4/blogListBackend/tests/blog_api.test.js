@@ -45,10 +45,10 @@ test('successfully created a new blog', async () => {
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
   assert(blogsAtEnd.some(blog =>
-    blog.title === newNote.title &&
-    blog.author === newNote.author &&
-    blog.url === newNote.url &&
-    blog.likes == newNote.likes
+    blog.title === newBlog.title &&
+    blog.author === newBlog.author &&
+    blog.url === newBlog.url &&
+    blog.likes == newBlog.likes
   ))
 })
 
@@ -68,13 +68,13 @@ test('blog with no likes has 0 added automatically', async () => {
 })
 
 test('missing author or url', async () => {
-  const newNote = {
+  const newBlog = {
     author: 'me',
     likes: '23',
   }
   await api
     .post('/api/blogs')
-    .send(newNote)
+    .send(newBlog)
     .expect(400)
 })
 
