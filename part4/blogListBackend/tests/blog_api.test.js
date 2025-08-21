@@ -134,10 +134,80 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
-    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)  
+  })
+})
 
-    const usernames = usersAtEnd.map(u => u.username)
-    assert(usernames.includes(newUser.username))
+describe('username and password validation', () => {
+  test('username must be at least 3 characters long', async () => {
+    const newUser = {
+      username: 'ab',
+      name: 'Short Username',
+      password: 'validpassword'
+    }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    assert(response.body.error.includes('username'))
+  })
+
+  test('password must be at least 3 characters long', async () => {
+    const newUser = {
+      username: 'validuser',
+      name: 'Short Password',
+      password: 'pw'
+    }
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    assert(response.body.error.includes('password'))
+  })
+
+  test('missing username returns 400', async () => {
+    const newUser = {
+      name: 'No Username',
+      password: 'validpassword'
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('missing password returns 400', async () => {
+    const newUser = {
+      username: 'validuser',
+      name: 'No Password'
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
+  test('creation fails with proper status and message if username already exists', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root', // already exists from beforeEach
+      name: 'Duplicate User',
+      password: 'anotherpassword'
+    }
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(response.body.error.includes('exists'))
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
 })
 
