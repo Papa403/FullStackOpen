@@ -30,15 +30,15 @@ test('unique identifier property of blog posts is named id', async () => {
 })
 
 test('successfully created a new blog', async () => {
-  const newNote = {
+  const newBlog = {
     title:'test note added',
     author:'me in the code',
     url:'http://localhost.com',
-    likes:'42'
+    likes: 42
   }
   await api
     .post('/api/blogs')
-    .send(newNote)
+    .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
   
@@ -53,14 +53,14 @@ test('successfully created a new blog', async () => {
 })
 
 test('blog with no likes has 0 added automatically', async () => {
-  const newNote = {
+  const newBlog = {
     title:'test note added with no likes',
     author:'me in the code',
     url:'http://localhost.com',
   }
   const response = await api
     .post('/api/blogs')
-    .send(newNote)
+    .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
   
