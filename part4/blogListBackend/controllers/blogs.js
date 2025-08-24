@@ -1,7 +1,5 @@
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -17,7 +15,7 @@ blogsRouter.post('/', async (request, response) => {
   }
   const user = request.user
   if (!user) {
-    return response.status(400).json({ error: 'no user found' })
+    return response.status(401).json({ error: 'unauthorized' })
   }
 
   const blog = new Blog({
@@ -35,6 +33,10 @@ blogsRouter.post('/', async (request, response) => {
 blogsRouter.delete('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
   const user = request.user
+  if (!blog.user) {
+    await Blog.findByIdAndDelete(request.params.id)
+    return response.status(204).end()
+  }
   if(blog.user.toString() !== user._id.toString() ) {
     return response.status(401).json({ error: 'not authorized to delete' })
   }

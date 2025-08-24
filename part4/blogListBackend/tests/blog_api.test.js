@@ -6,11 +6,31 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const User = require('../models/user')
+const Blog = require('../models/blog')
 
 const api = supertest(app)
 
+const default_username = 'root'
+const default_name = 'user1'
+const default_password = 'sekret'
+
+const createTestUser = async (username = default_username, name = default_name, password = default_password) => {
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash(password, 10)
+  const user = new User({ username, name, passwordHash })
+  await user.save()
+  return user
+}
+
+const getTokenForUser = async (username = default_username, password = default_password) => {
+  const response = await api
+    .post('/api/login')
+    .send({ username, password })
+    .expect(200)
+  return response.body.token
+}
+
 beforeEach(async () => {
-  const Blog = require('../models/blog')
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
 })
@@ -30,6 +50,8 @@ test('unique identifier property of blog posts is named id', async () => {
 })
 
 test('successfully created a new blog', async () => {
+  await createTestUser()
+  const token = await getTokenForUser()
   const newBlog = {
     title:'test note added',
     author:'me in the code',
@@ -38,6 +60,7 @@ test('successfully created a new blog', async () => {
   }
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -53,6 +76,8 @@ test('successfully created a new blog', async () => {
 })
 
 test('blog with no likes has 0 added automatically', async () => {
+  await createTestUser()
+  const token = await getTokenForUser()
   const newBlog = {
     title:'test note added with no likes',
     author:'me in the code',
@@ -60,6 +85,7 @@ test('blog with no likes has 0 added automatically', async () => {
   }
   const response = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -110,12 +136,7 @@ test('updating likes of a resource', async () => {
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
+    await createTestUser()
   })
 
   test('creation succeeds with a fresh username', async () => {
@@ -209,6 +230,18 @@ describe('username and password validation', () => {
     const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
+})
+
+test('no blog if token is not provided', async () => {
+  const newBlog = {
+    author: 'me',
+    title: 'new blog without token',
+    url: 'http://localhost:10000000000000',
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
 })
 
 after(async () => {
